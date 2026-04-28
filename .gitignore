@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+dist
+.env
+.env.*
+.DS_Store
+.vscode
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+npm-install.log
