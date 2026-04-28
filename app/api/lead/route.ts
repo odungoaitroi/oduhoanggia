@@ -21,8 +21,8 @@ type RateLimitEntry = {
 };
 
 type JsonBodyResult =
-  | { ok: true; body: LeadPayload; response?: never }
-  | { ok: false; response: Response; body?: never };
+  | { ok: true; body: LeadPayload }
+  | { ok: false; response: NextResponse };
 
 const noStoreHeaders = { "Cache-Control": "no-store" };
 const genericValidationMessage =
@@ -330,9 +330,7 @@ export async function POST(request: Request) {
     }
 
     const jsonBody = await readJsonBody(request);
-    if (jsonBody.ok === false) {
-      return jsonBody.response;
-    }
+    if (jsonBody.ok === false) return jsonBody.response;
 
     const body = jsonBody.body;
 

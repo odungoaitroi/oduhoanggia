@@ -220,12 +220,7 @@ button, input, textarea, select {
 .route-grid { grid-template-columns: repeat(2, 1fr); }
 .route-card {
   padding: 22px;
-  font-family: var(--font-sans), var(--font-fallback);
-  font-size: clamp(16px, 1.6vw, 18px);
   font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  color: var(--text);
   min-height: 96px;
   display: flex;
   align-items: center;
@@ -248,14 +243,7 @@ button, input, textarea, select {
 .card-body { padding: 22px; }
 .card h3 { margin: 0; font-size: 22px; }
 .card p { margin: 12px 0 0; color: var(--muted); }
-.text-link {
-  display: inline-block;
-  margin-top: 18px;
-  color: var(--primary-dark);
-  font-family: var(--font-sans), var(--font-fallback);
-  font-weight: 700;
-  line-height: 1.35;
-}
+.text-link { display: inline-block; margin-top: 18px; color: var(--primary-dark); font-weight: 700; }
 .emoji-icon { font-size: 34px; }
 .benefit-card, .testimonial-card { padding: 24px; }
 .split-heading {
@@ -540,13 +528,9 @@ button, input, textarea, select {
   border: 1px solid var(--border);
   min-width: 0;
   max-width: 100%;
+  overflow-wrap: anywhere;
   border-radius: 16px;
   background: white;
-  font-family: var(--font-sans), var(--font-fallback);
-  font-size: 15px;
-  line-height: 1.35;
-  font-weight: 600;
-  overflow-wrap: anywhere;
 }
 .honeypot { position: absolute; left: -9999px; opacity: 0; }
 .form-status { margin-top: 8px; font-size: 14px; }
@@ -1465,9 +1449,11 @@ body {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  font-family: var(--font-sans), var(--font-fallback);
-  font-size: 14px;
-  line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
+  overflow-wrap: anywhere;
+  font: inherit;
   font-weight: 600;
   padding: 0;
 }
@@ -1476,12 +1462,12 @@ body {
   right: 0;
   top: calc(100% + 14px);
   display: none;
-  width: max-content;
   min-width: 220px;
-  max-width: min(320px, calc(100vw - 32px));
   padding: 10px;
   border: 1px solid var(--border);
-  overflow-wrap: normal;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   border-radius: 18px;
   background: #fff;
   box-shadow: var(--shadow);
@@ -1492,15 +1478,8 @@ body {
   gap: 4px;
 }
 .nav-dropdown-menu a {
-  display: block;
   padding: 10px 12px;
   border-radius: 12px;
-  font-family: var(--font-sans), var(--font-fallback);
-  font-size: 14px;
-  line-height: 1.35;
-  font-weight: 600;
-  color: var(--muted);
-  white-space: normal;
 }
 .nav-dropdown-menu a:hover { background: var(--surface); }
 .lead-fallback {
