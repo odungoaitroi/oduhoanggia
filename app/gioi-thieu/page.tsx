@@ -1,3 +1,4 @@
+"use client";
 import { BaseSchemas } from "../../components/schema";
 import { SiteShell } from "../../components/site-shell";
 import { Button, Container, SectionTitle } from "../../components/ui";
