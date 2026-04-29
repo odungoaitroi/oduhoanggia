@@ -2089,3 +2089,46 @@ body {
     width: auto;
   }
 }
+/* --- CẤU HÌNH ẢNH SIÊU TO VÀ HIỆN ĐẦY ĐỦ CÂY DÙ --- */
+
+/* 1. Ép tất cả các khung chứa ảnh phải nở to ra */
+.card, .product-card, .project-card, .home-product-card {
+  padding: 0 !important; /* Xóa khoảng đệm thừa quanh khung */
+  overflow: hidden !important;
+}
+
+/* 2. Ép hình ảnh to hết cỡ và không bị cắt */
+.card img, 
+.product-card img, 
+.product-card > img,
+.project-card img,
+.media-gallery-image,
+.home-product-card img {
+  width: 100% !important;
+  /* Chế độ 'contain' giúp hiện đủ tán dù, 'background' để lấp đầy khung */
+  object-fit: contain !important; 
+  background-color: #ffffff !important; 
+  
+  /* Tăng chiều cao khung hình để ảnh cây dù trông to hơn */
+  height: 450px !important; 
+  
+  /* Loại bỏ các giới hạn tỷ lệ cũ */
+  aspect-ratio: auto !important; 
+  padding: 5px !important; /* Tạo một chút khoảng cách nhỏ để tán dù không chạm sát mép */
+}
+
+/* 3. Tối ưu riêng cho Mobile để ảnh chiếm trọn màn hình */
+@media (max-width: 720px) {
+  .card-grid, .home-products-grid {
+    grid-template-columns: 1fr !important; /* Ép hiện 1 cột để ảnh to nhất có thể */
+    gap: 24px !important;
+  }
+
+  .card img, .product-card img, .product-card > img {
+    height: 380px !important; /* Chiều cao tối ưu cho màn hình điện thoại */
+  }
+
+  .hero-section h1 {
+    font-size: 32px !important; /* Thu nhỏ chữ tiêu đề để nhường chỗ cho ảnh */
+  }
+}
