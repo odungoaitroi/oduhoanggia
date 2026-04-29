@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import { LeadForm } from "../../components/lead-form";
 import { BaseSchemas } from "../../components/schema";
