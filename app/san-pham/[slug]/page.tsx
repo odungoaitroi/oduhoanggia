@@ -11,6 +11,7 @@ import { articles, getCategory, getProductsByCategory, productCategories, siteDa
 import { categorySeoContent } from "../../../lib/seo-content";
 import { getCategoryVideos, getYoutubeEmbedUrl, getYoutubeThumbnail } from "../../../lib/youtube";
 import { getZaloWebUrl } from "../../../lib/zalo";
+
 type ProductCategoryItem = NonNullable<ReturnType<typeof getCategory>>;
 type ArticleItem = (typeof articles)[number];
 
@@ -22,8 +23,6 @@ function isArticleItem(value: ArticleItem | undefined): value is ArticleItem {
   return Boolean(value);
 }
 
-
-
 export function generateStaticParams() {
   return productCategories.map((item) => ({ slug: item.slug }));
 }
@@ -33,7 +32,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!category) return {};
 
   return {
-    title: category.seoTitle,
+    title: `${category.name} | Giá tại xưởng | ${siteData.brandName}`,
     description: category.seoDescription,
     alternates: { canonical: `/san-pham/${category.slug}` },
     openGraph: {
@@ -72,38 +71,6 @@ export default async function CategoryPage({ params }: { params: { slug: string 
     }))
   };
 
-  const videoSchemas = categoryVideos
-    .map((video) => {
-      const thumbnailUrl = getYoutubeThumbnail(video.youtubeUrl, video.youtubeId);
-      const embedUrl = getYoutubeEmbedUrl(video.youtubeUrl, video.youtubeId);
-
-      if (!thumbnailUrl || !embedUrl) return null;
-
-      const schema: Record<string, unknown> = {
-        "@context": "https://schema.org",
-        "@type": "VideoObject",
-        name: video.title,
-        description: video.description || video.title,
-        thumbnailUrl: [thumbnailUrl],
-        embedUrl,
-        contentUrl: video.youtubeUrl,
-        url: video.youtubeUrl,
-        inLanguage: "vi-VN",
-        publisher: {
-          "@type": "Organization",
-          name: siteData.brandName,
-          url: siteData.domain
-        }
-      };
-
-      if (video.uploadDate) {
-        schema.uploadDate = video.uploadDate;
-      }
-
-      return schema;
-    })
-    .filter((schema): schema is Record<string, unknown> => schema !== null);
-
   return (
     <SiteShell>
       <BaseSchemas />
@@ -115,19 +82,18 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         ]}
       />
       <JsonLd data={collectionSchema} />
-      {videoSchemas.length > 0 ? <JsonLd data={videoSchemas} /> : null}
       {seo ? <FAQJsonLd items={seo.faqs} /> : null}
 
-      <section className="page-hero">
+      <section className="page-hero" style={{ background: 'var(--surface)', padding: '60px 0' }}>
         <Container>
           <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: "Sản phẩm", href: "/san-pham" }, { label: category.name }]} />
-          <SectionTitle eyebrow="Danh mục sản phẩm" title={category.name} subtitle={category.intro} align="left" as="h1" />
-          <div className="page-actions">
-            <Button href="/bao-gia" variant="primary">
-              Nhận báo giá nhanh
+          <SectionTitle eyebrow="Danh mục sản phẩm chuyên sâu" title={category.name} subtitle={category.intro} align="left" as="h1" />
+          <div className="page-actions" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+            <Button href={getZaloWebUrl(siteData.phone)} external variant="primary" style={{ height: '52px', padding: '0 30px' }}>
+              💬 Gửi ảnh mặt bằng qua Zalo
             </Button>
-            <Button href={getZaloWebUrl(siteData.phone)} external>
-              Gửi ảnh qua Zalo
+            <Button href="/bao-gia" variant="secondary">
+              Nhận báo giá nhanh
             </Button>
           </div>
         </Container>
@@ -135,14 +101,17 @@ export default async function CategoryPage({ params }: { params: { slug: string 
 
       <section className="section">
         <Container>
-          <div className="content-grid">
+          <div className="content-grid" style={{ marginBottom: '40px' }}>
             <article className="content-card">
-              <h2>Điểm phù hợp của dòng sản phẩm này</h2>
+              <h2 style={{ color: 'var(--primary)', fontSize: '22px' }}>Tại sao chọn dòng {category.name}?</h2>
               <InfoList items={category.benefits} />
             </article>
-            <article className="content-card">
-              <h2>Tư vấn theo mặt bằng thực tế</h2>
-              <p>Mỗi không gian sẽ cần kiểu dù, kích thước và màu sắc khác nhau. Nếu chưa chắc nên chọn mẫu nào, bạn có thể gửi ảnh vị trí qua Zalo để được tư vấn nhanh hơn.</p>
+            <article className="content-card" style={{ borderLeft: '4px solid var(--primary)', background: '#fff' }}>
+              <h2 style={{ fontSize: '22px' }}>Tư vấn in Logo & Thương hiệu</h2>
+              <p>Ô Dù Đại Phát hỗ trợ in ấn Logo sắc nét trên mọi chất liệu vải dù của dòng <strong>{category.name}</strong>. Gửi mẫu thiết kế qua Zalo để chúng tôi lên phối cảnh miễn phí cho bạn.</p>
+              <div style={{ marginTop: '15px' }}>
+                 <Link href={siteData.zaloLink} style={{ fontWeight: 700, color: 'var(--zalo)' }}>→ Chat Zalo tư vấn in ấn</Link>
+              </div>
             </article>
           </div>
 
@@ -154,67 +123,52 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         </Container>
       </section>
 
-      <YoutubeGallery
-        title="Video hướng dẫn sửa chữa và bảo trì ô dù"
-        subtitle="Video kỹ thuật sau bán hàng liên quan đến sửa chữa, thay vải, thay dây, sửa tay quay và bảo trì dòng dù này; không dùng để thay thế ảnh sản phẩm."
-        videos={categoryVideos}
-        productSlug={category.slug}
-        limit={3}
-      />
-
-      {categoryVideos.length > 0 ? (
-        <section className="section">
-          <Container>
-            <div className="content-card video-conversion-card">
-              <h2>Cần tư vấn sửa chữa hoặc bảo trì dòng dù này?</h2>
-              <p>Gửi ảnh/video hiện trạng qua Zalo để được tư vấn thay vải, sửa tay quay, sửa khung hoặc phương án bảo trì phù hợp.</p>
-              <VideoConversionCTA productSlug={category.slug} productName={category.name} />
-            </div>
-          </Container>
-        </section>
-      ) : null}
-
+      {/* Phân đoạn nội dung SEO chuyên sâu */}
       {seo ? (
         <section className="section section-soft">
           <Container>
-            <div className="content-grid">
+            <div className="content-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr' }}>
               <article className="content-card wide-content-card">
-                <h2>{seo.title}</h2>
-                <p>{seo.lead}</p>
-                <h3>Ứng dụng thực tế</h3>
-                <InfoList items={seo.applications} />
-                <h3>Gợi ý chọn theo nhu cầu</h3>
-                <InfoList items={seo.choosingTips} />
+                <h2 style={{ color: 'var(--primary)' }}>{seo.title}</h2>
+                <p style={{ fontSize: '17px', lineHeight: '1.8' }}>{seo.lead}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+                   <div>
+                      <h3 style={{ fontSize: '18px' }}>Ứng dụng thực tế</h3>
+                      <InfoList items={seo.applications} />
+                   </div>
+                   <div>
+                      <h3 style={{ fontSize: '18px' }}>Mẹo chọn mẫu dù</h3>
+                      <InfoList items={seo.choosingTips} />
+                   </div>
+                </div>
               </article>
 
               <article className="content-card">
-                <h2>Bảng gợi ý kích thước</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Bảng gợi ý kích thước</h2>
                 <div className="responsive-table">
                   <table>
                     <thead>
                       <tr>
                         <th>Nhu cầu</th>
                         <th>Gợi ý</th>
-                        <th>Lưu ý</th>
                       </tr>
                     </thead>
                     <tbody>
                       {seo.sizeGuide.map((row) => (
                         <tr key={row.need}>
-                          <td>{row.need}</td>
+                          <td style={{ fontWeight: 600 }}>{row.need}</td>
                           <td>{row.suggestion}</td>
-                          <td>{row.note}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
 
-                <div className="mini-cta-box">
-                  <strong>Cần chọn nhanh?</strong>
-                  <p>Gửi ảnh mặt bằng qua Zalo để được gợi ý mẫu, kích thước và số lượng phù hợp.</p>
-                  <Button href={getZaloWebUrl(siteData.phone)} external variant="primary">
-                    Gửi ảnh qua Zalo
+                <div style={{ marginTop: '25px', padding: '20px', background: 'var(--surface)', borderRadius: '16px', textAlign: 'center' }}>
+                  <strong>{siteData.trustStats[1].value}</strong>
+                  <p style={{ fontSize: '14px', margin: '8px 0' }}>Ô Dù Đại Phát vận chuyển an toàn dòng dù {category.name.toLowerCase()} tận nơi toàn quốc.</p>
+                  <Button href={getZaloWebUrl(siteData.phone)} external variant="primary" style={{ width: '100%' }}>
+                    Nhắn Zalo kiểm tra cước phí
                   </Button>
                 </div>
               </article>
@@ -223,10 +177,18 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         </section>
       ) : null}
 
+      <YoutubeGallery
+        title="Kỹ thuật & Bảo trì"
+        subtitle={`Hướng dẫn vận hành, thay vải và bảo trì đúng cách cho dòng ${category.name.toLowerCase()} bền đẹp lâu dài.`}
+        videos={categoryVideos}
+        productSlug={category.slug}
+        limit={3}
+      />
+
       {seo ? (
         <section className="section">
           <Container>
-            <SectionTitle eyebrow="FAQ" title={`Câu hỏi thường gặp về ${category.name.toLowerCase()}`} />
+            <SectionTitle eyebrow="FAQ" title={`Giải đáp về ${category.name.toLowerCase()}`} />
             <div className="faq-list">
               {seo.faqs.map((item) => (
                 <details key={item.question} className="faq-item">
@@ -239,35 +201,20 @@ export default async function CategoryPage({ params }: { params: { slug: string 
         </section>
       ) : null}
 
+      {/* Footer Links */}
       {seo ? (
         <section className="section section-soft">
           <Container>
-            <SectionTitle
-              eyebrow="Xem thêm"
-              title="Liên kết hữu ích trước khi đặt mua"
-              subtitle="Các trang liên quan giúp bạn so sánh mẫu, xem thêm kinh nghiệm chọn dù và gửi yêu cầu báo giá chính xác hơn."
-            />
+            <SectionTitle eyebrow="Khám phá thêm" title="Liên kết hữu ích cho bạn" />
             <div className="route-grid">
-              {relatedCategories.map((item) =>
-                item ? (
-                  <Link key={item.slug} href={`/san-pham/${item.slug}`} className="route-card">
-                    {item.name}
-                  </Link>
-                ) : null
-              )}
-              {relatedArticles.map((item) =>
-                item ? (
-                  <Link key={item.slug} href={`/kien-thuc/${item.slug}`} className="route-card">
-                    {item.title}
-                  </Link>
-                ) : null
-              )}
-              <Link href="/du-an" className="route-card">
-                Xem công trình thực tế
-              </Link>
-              <Link href="/bao-gia" className="route-card">
-                Nhận báo giá nhanh
-              </Link>
+              {relatedCategories.map((item) => (
+                <Link key={item.slug} href={`/san-pham/${item.slug}`} className="route-card">{item.name}</Link>
+              ))}
+              {relatedArticles.map((item) => (
+                <Link key={item.slug} href={`/kien-thuc/${item.slug}`} className="route-card">{item.title}</Link>
+              ))}
+              <Link href="/du-an" className="route-card">Công trình thực tế</Link>
+              <Link href="/bao-gia" className="route-card">Bảng báo giá mới nhất</Link>
             </div>
           </Container>
         </section>
