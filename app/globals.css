@@ -1,66 +1,86 @@
-/* --- HỆ THỐNG HIỂN THỊ ẢNH SIÊU TO (PREMIUM) --- */
+/* --- HỆ THỐNG HIỂN THỊ SIÊU CẤP: ẢNH TO & FULL TÁN --- */
 :root {
   --primary: #dc2626;
+  --bg: #ffffff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* 1. ÉP ẢNH HIỆN ĐẦY ĐỦ (KHÔNG CẮT) & NỞ TO HẾT CỠ */
+/* 1. ÉP ẢNH HIỆN ĐẦY ĐỦ 100% - KHÔNG CẮT TÁN DÙ */
 .card img, 
 .product-card img, 
 .product-card > img, 
 .project-card img,
-.media-gallery-image {
+.media-gallery-image,
+.home-product-card img {
   width: 100% !important;
-  height: 550px !important; /* Chiều cao cực đại để cây dù nở to nhất */
-  object-fit: contain !important; /* HIỆN 100% ẢNH, KHÔNG CẮT TÁN DÙ */
+  height: 520px !important; /* Tăng chiều cao tối đa để cây dù nở to nhất */
+  object-fit: contain !important; /* HIỆN 100% TÁN DÙ, KHÔNG CẮT BỚT */
   background-color: #ffffff !important;
   display: block !important;
-  padding: 10px !important; /* Khoảng đệm nhỏ giúp ảnh trông sang trọng hơn */
+  padding: 5px !important;
 }
 
-/* 2. CHẾ ĐỘ 1 CỘT TRÊN MOBILE (GIÚP ẢNH TO GẤP ĐÔI) */
+/* 2. ÉP HIỆN 1 CỘT TRÊN MOBILE ĐỂ CHIỀU NGANG RỘNG NHẤT */
 @media (max-width: 760px) {
-  /* Ép tất cả danh sách sản phẩm/dự án về 1 hàng dọc */
   .card-grid, 
   .home-products-grid, 
   .youtube-gallery-grid,
   .grid,
   [class*="grid"] {
     display: flex !important;
-    flex-direction: column !important;
-    gap: 35px !important;
-    padding: 15px !important;
+    flex-direction: column !important; /* Ép về hàng dọc 1 cột */
+    gap: 32px !important;
+    padding: 16px !important;
   }
 
   .card img, 
   .product-card img, 
   .product-card > img {
-    height: 480px !important; /* Chiều cao tối ưu cho màn hình điện thoại */
+    height: 450px !important; /* Chiều cao cực đại trên điện thoại */
   }
 
-  /* Thu nhỏ chữ tiêu đề để dành chỗ cho ảnh dù */
+  /* Thu nhỏ tiêu đề để nhường diện tích cho ảnh sản phẩm */
   h1, .section-title {
     font-size: 26px !important;
     text-align: center !important;
+    padding: 0 10px !important;
   }
 }
 
-/* 3. THANH LIÊN HỆ DƯỚI CÙNG CHUYÊN NGHIỆP */
+/* 3. THANH LIÊN HỆ DƯỚI CÙNG (CỐ ĐỊNH) */
 .sticky-mobile-bar {
-  position: fixed; left: 0; right: 0; bottom: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  z-index: 9999; background: #fff; border-top: 1px solid #eee;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  z-index: 9999;
+  background: #fff;
+  border-top: 1px solid #eee;
 }
 
 .sticky-mobile-bar__item {
-  height: 65px; display: flex; align-items: center; justify-content: center;
-  color: #fff; font-weight: 800; text-decoration: none; font-size: 14px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  font-size: 14px;
 }
 
 .sticky-mobile-bar__item--call { background: #000; }
 .sticky-mobile-bar__item--zalo { background: #0068ff; }
 .sticky-mobile-bar__item--quote { background: var(--primary); }
 
-/* Đẩy nội dung lên để thanh liên hệ không che khuất */
+/* Đẩy chân trang lên để không bị che bởi thanh công cụ */
 main, footer { padding-bottom: 100px !important; }
+
+/* Khung viền sản phẩm sạch sẽ */
+.card, .product-card {
+  border: 1px solid #f0f0f0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+}
