@@ -41,37 +41,42 @@ img { max-width: 100%; height: auto; display: block; border-radius: 12px; }
   min-height: 48px; border-radius: 16px; display: grid; place-items: center;
   font-weight: 800; color: white; font-size: 14px;
 }
+/* --- BẢN SỬA LỖI HÌNH ẢNH TOÀN DIỆN (FORCE) --- */
+/* Áp dụng cho cả PC và Mobile để đảm bảo không bao giờ bị cắt ảnh */
 
-.sticky-mobile-bar__item--call { background: #0f172a; }
-.sticky-mobile-bar__item--zalo { background: var(--zalo); }
-.sticky-mobile-bar__item--quote { background: var(--primary); }
-/* --- SỬA LỖI HÌNH ẢNH BỊ CẮT TRÊN MOBILE --- */
-@media (max-width: 760px) {
-  /* Áp dụng cho ảnh sản phẩm và ảnh danh mục */
-  .card img, 
-  .product-card > img,
-  .media-gallery-image {
-    /* Ép ảnh phải hiện đầy đủ cây dù, không được cắt bớt */
-    object-fit: contain !important; 
-    
-    /* Thêm màu nền nhạt để khung hình trông đầy đặn hơn khi ảnh bị hẹp */
-    background-color: var(--surface); 
-    
-    /* Chuyển khung hình về dạng vuông để ôm khít dáng cây dù đứng */
-    aspect-ratio: 1 / 1; 
-    
-    /* Đảm bảo chiều cao không bị bóp méo */
-    height: auto !important;
-  }
+.card img, 
+.product-card img, 
+.product-card > img,
+.project-card img,
+.media-gallery-image,
+.home-product-card img {
+  /* Ép buộc hiển thị đầy đủ vật thể, không được cắt bất cứ góc nào */
+  object-fit: contain !important; 
+  
+  /* Tạo nền trắng hoặc xám nhạt để phần khung thừa trông sạch sẽ */
+  background-color: #ffffff !important; 
+  
+  /* Cố định tỷ lệ khung hình vuông để ôm trọn dáng cây dù */
+  aspect-ratio: 1 / 1 !important; 
+  
+  /* Đảm bảo ảnh luôn nằm giữa khung */
+  object-position: center !important;
+  
+  /* Tăng chất lượng hiển thị ảnh khi co giãn */
+  image-rendering: -webkit-optimize-contrast;
 }
-/* Sửa lỗi ảnh bị cắt tán dù trên Mobile */
+
+/* Điều chỉnh riêng cho Mobile để ảnh không bị quá nhỏ */
 @media (max-width: 760px) {
-  .card img, 
-  .product-card > img, 
+  .product-card img, 
+  .product-card > img,
   .project-card img {
-    object-fit: contain !important; /* Hiện toàn bộ cây dù */
-    background-color: #f8fafc;    /* Nền xám nhạt cho phần khung thừa */
-    aspect-ratio: 1 / 1;          /* Khung vuông để ôm trọn dáng dù đứng */
-    height: 300px !important;     /* Tăng chiều cao để ảnh không bị quá nhỏ */
+    height: 320px !important; /* Tăng chiều cao khung nhìn trên điện thoại */
+    width: 100% !important;
+  }
+  
+  /* Tránh bị thanh công cụ liên hệ che mất nội dung cuối trang */
+  main {
+    padding-bottom: 100px !important;
   }
 }
