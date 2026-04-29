@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import { AreaCard } from "../../components/cards";
 import { BaseSchemas } from "../../components/schema";
