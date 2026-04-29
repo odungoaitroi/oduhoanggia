@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import { BaseSchemas, BreadcrumbJsonLd } from "../../components/schema";
 import { SiteShell } from "../../components/site-shell";
