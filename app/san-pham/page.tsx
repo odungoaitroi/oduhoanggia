@@ -1,3 +1,4 @@
+"use client";
 import type { Metadata } from "next";
 import { CategoryCard, ProductCard } from "../../components/cards";
 import { BaseSchemas, BreadcrumbJsonLd, ProductJsonLd } from "../../components/schema";
