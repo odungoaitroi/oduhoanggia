@@ -64,3 +64,14 @@ img { max-width: 100%; height: auto; display: block; border-radius: 12px; }
     height: auto !important;
   }
 }
+/* Sửa lỗi ảnh bị cắt tán dù trên Mobile */
+@media (max-width: 760px) {
+  .card img, 
+  .product-card > img, 
+  .project-card img {
+    object-fit: contain !important; /* Hiện toàn bộ cây dù */
+    background-color: #f8fafc;    /* Nền xám nhạt cho phần khung thừa */
+    aspect-ratio: 1 / 1;          /* Khung vuông để ôm trọn dáng dù đứng */
+    height: 300px !important;     /* Tăng chiều cao để ảnh không bị quá nhỏ */
+  }
+}
