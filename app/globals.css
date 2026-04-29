@@ -1,99 +1,66 @@
-/* --- HỆ THỐNG GIAO DIỆN SIÊU HIỂN THỊ (FULL OPTIMIZED) --- */
-
+/* --- HỆ THỐNG HIỂN THỊ ẢNH SIÊU TO (PREMIUM) --- */
 :root {
   --primary: #dc2626;
-  --bg: #ffffff;
-  --text: #0f172a;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
-}
-
-/* 1. ÉP ẢNH TO VÀ HIỆN ĐẦY ĐỦ (CONTAIN) */
-/* Xóa bỏ mọi ràng buộc về tỷ lệ cũ để tán dù hiện ra hết */
+/* 1. ÉP ẢNH HIỆN ĐẦY ĐỦ (KHÔNG CẮT) & NỞ TO HẾT CỠ */
 .card img, 
 .product-card img, 
 .product-card > img, 
 .project-card img,
 .media-gallery-image {
   width: 100% !important;
-  height: 500px !important; /* Tăng chiều cao lên mức tối đa để cây dù nở to nhất */
-  object-fit: contain !important; /* Bắt buộc hiện 100% ảnh, KHÔNG ĐƯỢC CẮT */
+  height: 550px !important; /* Chiều cao cực đại để cây dù nở to nhất */
+  object-fit: contain !important; /* HIỆN 100% ẢNH, KHÔNG CẮT TÁN DÙ */
   background-color: #ffffff !important;
   display: block !important;
-  padding: 5px !important;
+  padding: 10px !important; /* Khoảng đệm nhỏ giúp ảnh trông sang trọng hơn */
 }
 
-/* 2. PHÁ BỎ CẤU TRÚC LƯỚI NHỎ TRÊN MOBILE */
+/* 2. CHẾ ĐỘ 1 CỘT TRÊN MOBILE (GIÚP ẢNH TO GẤP ĐÔI) */
 @media (max-width: 760px) {
-  /* Ép tất cả các danh sách sản phẩm về 1 cột duy nhất */
-  /* Khi hiện 1 cột, chiều ngang ảnh sẽ rộng gấp đôi bình thường -> ẢNH TO HƠN */
+  /* Ép tất cả danh sách sản phẩm/dự án về 1 hàng dọc */
   .card-grid, 
   .home-products-grid, 
-  .youtube-gallery-grid, 
-  .grid {
+  .youtube-gallery-grid,
+  .grid,
+  [class*="grid"] {
     display: flex !important;
     flex-direction: column !important;
-    gap: 30px !important;
+    gap: 35px !important;
     padding: 15px !important;
   }
 
   .card img, 
   .product-card img, 
   .product-card > img {
-    height: 420px !important; /* Chiều cao tối ưu cho màn hình dọc điện thoại */
+    height: 480px !important; /* Chiều cao tối ưu cho màn hình điện thoại */
   }
 
-  /* Làm chữ tiêu đề nhỏ lại một chút để nhường không gian cho ảnh */
+  /* Thu nhỏ chữ tiêu đề để dành chỗ cho ảnh dù */
   h1, .section-title {
-    font-size: 28px !important;
+    font-size: 26px !important;
     text-align: center !important;
   }
 }
 
-/* 3. THANH LIÊN HỆ MOBILE CHUẨN (KHÔNG ĐÈ NỘI DUNG) */
+/* 3. THANH LIÊN HỆ DƯỚI CÙNG CHUYÊN NGHIỆP */
 .sticky-mobile-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  z-index: 999;
-  background: #fff;
-  border-top: 1px solid #eee;
+  position: fixed; left: 0; right: 0; bottom: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  z-index: 9999; background: #fff; border-top: 1px solid #eee;
 }
 
 .sticky-mobile-bar__item {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-weight: 800;
-  text-decoration: none;
-  font-size: 14px;
+  height: 65px; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; text-decoration: none; font-size: 14px;
 }
 
 .sticky-mobile-bar__item--call { background: #000; }
 .sticky-mobile-bar__item--zalo { background: #0068ff; }
 .sticky-mobile-bar__item--quote { background: var(--primary); }
 
-/* Đẩy chân trang lên để không bị thanh liên hệ che khuất */
-main, footer {
-  padding-bottom: 80px !important;
-}
-
-/* Khung chứa sản phẩm */
-.card, .product-card {
-  border: 1px solid #eee;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-}
+/* Đẩy nội dung lên để thanh liên hệ không che khuất */
+main, footer { padding-bottom: 100px !important; }
