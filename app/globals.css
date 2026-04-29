@@ -45,3 +45,22 @@ img { max-width: 100%; height: auto; display: block; border-radius: 12px; }
 .sticky-mobile-bar__item--call { background: #0f172a; }
 .sticky-mobile-bar__item--zalo { background: var(--zalo); }
 .sticky-mobile-bar__item--quote { background: var(--primary); }
+/* --- SỬA LỖI HÌNH ẢNH BỊ CẮT TRÊN MOBILE --- */
+@media (max-width: 760px) {
+  /* Áp dụng cho ảnh sản phẩm và ảnh danh mục */
+  .card img, 
+  .product-card > img,
+  .media-gallery-image {
+    /* Ép ảnh phải hiện đầy đủ cây dù, không được cắt bớt */
+    object-fit: contain !important; 
+    
+    /* Thêm màu nền nhạt để khung hình trông đầy đặn hơn khi ảnh bị hẹp */
+    background-color: var(--surface); 
+    
+    /* Chuyển khung hình về dạng vuông để ôm khít dáng cây dù đứng */
+    aspect-ratio: 1 / 1; 
+    
+    /* Đảm bảo chiều cao không bị bóp méo */
+    height: auto !important;
+  }
+}
