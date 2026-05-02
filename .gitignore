@@ -1,12 +1,43 @@
-node_modules
-.next
-out
-dist
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+.vercel/
+
+# production/build
+build/
+dist/
+
+# env/secrets
 .env
 .env.*
-.DS_Store
-.vscode
+!.env.example
+
+# database/local storage
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+prisma/*.db
+prisma/*.db-journal
+prisma/*.sqlite
+prisma/*.sqlite3
+
+# uploaded files generated at runtime
+public/uploads/
+
+# logs/cache
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
-npm-install.log
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+.cache/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

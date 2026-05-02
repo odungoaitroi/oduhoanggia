@@ -1,304 +1,94 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import { CategoryCard, ProjectCard } from "../components/cards";
-import { LeadForm } from "../components/lead-form";
-import { PhoneLink, ZaloLink } from "../components/conversion-links";
-import { QuoteCta } from "../components/quote-cta";
-import { BaseSchemas, FAQJsonLd, JsonLd, ProductJsonLd } from "../components/schema";
-import { SiteShell } from "../components/site-shell";
-import { Button, Container, SectionTitle } from "../components/ui";
-import { YoutubeGallery } from "../components/youtube-gallery";
-import { homeContent } from "../content/home";
-import { mediaContent } from "../content/media";
-import { productCategories, products, projects, siteData } from "../lib/site-data";
-import { guideVideos } from "../lib/video-data";
-import { getYoutubeEmbedUrl, getYoutubeId, getYoutubeThumbnail, getYoutubeWatchUrl } from "../lib/youtube";
+import Image from 'next/image';
+import Link from 'next/link';
+import { JsonLd } from '@/components/JsonLd';
+import { ProductCard } from '@/components/ProductCard';
+import { categories } from '@/lib/products';
+import { getPublishedProducts } from '@/lib/db-products';
+import { site } from '@/lib/site';
 
-export const metadata: Metadata = {
-  title: homeContent.metadata.title,
-  description: homeContent.metadata.description,
-  alternates: {
-    canonical: "/"
-  },
-  openGraph: {
-    title: homeContent.metadata.openGraphTitle,
-    description: homeContent.metadata.openGraphDescription,
-    url: siteData.domain,
-    type: "website",
-    images: [
-      {
-        url: siteData.socialImage,
-        width: 1200,
-        height: 630,
-        alt: "Ô dù ngoài trời Ô Dù Đại Phát"
-      }
+const heroImage = '/images/hero-o-du-ngoai-troi.webp';
+
+export default async function HomePage() {
+  const products = await getPublishedProducts();
+  const schema = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      { '@type': 'Organization', '@id': `${site.url}/#organization`, name: site.name, url: site.url, telephone: site.phone, sameAs: [site.secondaryUrl] },
+      { '@type': 'LocalBusiness', '@id': `${site.url}/#localbusiness`, name: site.name, url: site.url, telephone: site.phone, priceRange: 'Liên hệ', image: `${site.url}${heroImage}`, description: site.description, areaServed: 'Việt Nam' },
+      { '@type': 'WebSite', '@id': `${site.url}/#website`, url: site.url, name: site.name, publisher: { '@id': `${site.url}/#organization` } },
+      { '@type': 'FAQPage', '@id': `${site.url}/#faq`, mainEntity: [
+        { '@type': 'Question', name: 'Ô Dù Đại Phát bán những sản phẩm nào?', acceptedAnswer: { '@type': 'Answer', text: 'Ô Dù Đại Phát bán dù lệch tâm, dù đúng tâm, dù cafe, dù sân vườn, dù quảng cáo, nhà bạt, bàn ghế ngoài trời, xích đu và combo setup quán cafe.' } },
+        { '@type': 'Question', name: 'Có giao hàng toàn quốc không?', acceptedAnswer: { '@type': 'Answer', text: 'Có. Ô Dù Đại Phát hỗ trợ tư vấn, báo giá và giao hàng toàn quốc.' } },
+        { '@type': 'Question', name: 'Liên hệ báo giá bằng cách nào?', acceptedAnswer: { '@type': 'Answer', text: `Gọi hoặc Zalo ${site.phone} để nhận tư vấn và báo giá nhanh.` } }
+      ] }
     ]
-  }
-};
-
-const featuredProductSlugs = [
-  "du-lech-tam",
-  "du-tron-tam-giua",
-  "du-quan-cafe",
-  "du-san-vuon",
-  "nha-bat-di-dong"
-];
-
-const featuredProducts = productCategories.filter((item) => featuredProductSlugs.includes(item.slug));
-const featuredProductSchemaItems = products.filter((item) => featuredProductSlugs.includes(item.categorySlug)).slice(0, 8);
-const featuredVideos = guideVideos.slice(0, 3);
-
-type VideoObjectSchema = {
-  "@context": "https://schema.org";
-  "@type": "VideoObject";
-  name: string;
-  description: string;
-  thumbnailUrl: string;
-  embedUrl: string;
-  contentUrl: string;
-  uploadDate?: string;
-  publisher: {
-    "@type": "Organization";
-    name: string;
-    logo: {
-      "@type": "ImageObject";
-      url: string;
-    };
   };
-};
-
-function getVideoSchemas(): VideoObjectSchema[] {
-  return featuredVideos.flatMap((video) => {
-    const youtubeId = getYoutubeId(video.youtubeUrl, video.youtubeId);
-    if (!youtubeId) return [];
-
-    const schema: VideoObjectSchema = {
-      "@context": "https://schema.org",
-      "@type": "VideoObject",
-      name: video.title,
-      description: video.description || video.title,
-      thumbnailUrl: getYoutubeThumbnail(video.youtubeUrl, video.youtubeId),
-      embedUrl: getYoutubeEmbedUrl(video.youtubeUrl, video.youtubeId),
-      contentUrl: getYoutubeWatchUrl(video.youtubeUrl, video.youtubeId),
-      publisher: {
-        "@type": "Organization",
-        name: siteData.brandName,
-        logo: {
-          "@type": "ImageObject",
-          url: `${siteData.domain}/favicon.svg`
-        }
-      }
-    };
-
-    if (video.uploadDate) {
-      schema.uploadDate = video.uploadDate;
-    }
-
-    return [schema];
-  });
-}
-
-export default function HomePage() {
-  const videoSchemas = getVideoSchemas();
 
   return (
-    <SiteShell>
-      <BaseSchemas />
-      <FAQJsonLd items={homeContent.faqs} />
-      <ProductJsonLd items={featuredProductSchemaItems} />
-      {videoSchemas.length > 0 ? <JsonLd data={videoSchemas} /> : null}
-
-      <section className="hero-section home-hero-premium">
-        <Container>
-          <div className="hero-grid">
-            <div>
-              <span className="pill">{homeContent.hero.eyebrow}</span>
-              <h1 className="hero-title">{homeContent.hero.headline}</h1>
-              <p className="hero-subheadline">{homeContent.hero.subheadline}</p>
-              <p className="hero-description hero-description-compact">{homeContent.hero.description}</p>
-              <div className="hero-actions">
-                <PhoneLink placement="homepage_hero" className="button button-primary">
-                  {homeContent.hero.primaryCta}
-                </PhoneLink>
-                <ZaloLink placement="homepage_hero" className="button button-zalo">
-                  {homeContent.hero.zaloCta}
-                </ZaloLink>
-                <QuoteCta source="homepage_hero" className="button button-secondary">Nhận báo giá</QuoteCta>
-              </div>
-              <p className="hero-cta-note">{homeContent.hero.ctaNote}</p>
-              <div className="trust-bar" aria-label="Điểm mạnh của Ô Dù Đại Phát">
-                {homeContent.trustItems.map((item) => (
-                  <span key={item}>{item}</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="hero-card premium-hero-card">
-              <Image
-                src={mediaContent.heroImage}
-                alt={homeContent.hero.imageAlt}
-                width={960}
-                height={720}
-                priority
-                className="hero-image"
-              />
-              <div className="hero-mini-grid compact-mini-grid">
-                <div>
-                  <strong>{homeContent.hero.miniCards[0].title}</strong>
-                  <p>{homeContent.hero.miniCards[0].text}</p>
-                </div>
-                <div>
-                  <strong>
-                    {homeContent.hero.miniCards[1].title} {siteData.phoneDisplay}
-                  </strong>
-                  <p>{homeContent.hero.miniCards[1].text}</p>
-                </div>
-              </div>
+    <main>
+      <JsonLd data={schema} />
+      <section className="relative overflow-hidden bg-blue-950">
+        <Image src={heroImage} alt="Ô dù ngoài trời Ô Dù Đại Phát" fill priority className="object-cover opacity-40" sizes="100vw" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-blue-950/85 to-blue-900/30" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-2 lg:px-8">
+          <div>
+            <p className="mb-5 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-blue-100 ring-1 ring-white/20">Chuyên dù che nắng • dù cafe • dù sân vườn • nhà bạt</p>
+            <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">Ô Dù Đại Phát - Ô Dù Ngoài Trời, Dù Che Nắng, Dù Sân Vườn</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-blue-100">Cung cấp ô dù ngoài trời, dù lệch tâm, dù đúng tâm, dù cafe, dù quảng cáo, nhà bạt, bàn ghế ngoài trời và combo setup quán cafe. Gọi/Zalo {site.phone} để nhận báo giá nhanh.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a href={`tel:${site.phone}`} className="rounded-full bg-orange-500 px-7 py-4 text-center font-bold text-white shadow-xl shadow-orange-900/30 transition hover:bg-orange-600">☎ Gọi ngay {site.phone}</a>
+              <a href={`https://zalo.me/${site.phone}`} className="rounded-full bg-white px-7 py-4 text-center font-bold text-blue-800 shadow-xl transition hover:bg-blue-50">💬 Chat Zalo báo giá</a>
             </div>
           </div>
-        </Container>
+          <div className="hidden rounded-[2rem] bg-white/10 p-4 shadow-2xl ring-1 ring-white/20 backdrop-blur lg:block">
+            <Image src="/images/showroom-o-du-dai-phat.webp" alt="Showroom ô dù ngoài trời Ô Dù Đại Phát" width={900} height={620} className="h-[440px] w-full rounded-[1.5rem] object-cover" priority />
+          </div>
+        </div>
       </section>
 
-      <section className="conversion-trust-section" aria-label="Cam kết tư vấn và giao hàng của Ô Dù Đại Phát">
-        <Container>
-          <div className="conversion-trust-grid">
-            {homeContent.conversionTrustItems.map((item) => (
-              <div key={item} className="conversion-trust-card">
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </Container>
+      <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8" aria-label="Breadcrumb">
+        <nav className="rounded-2xl bg-white px-5 py-3 text-sm text-slate-600 ring-1 ring-slate-100"><Link href="/" className="font-bold text-blue-700">Trang chủ</Link> / Ô dù ngoài trời / Sản phẩm</nav>
       </section>
 
-      <section className="section section-soft home-section-compact">
-        <Container>
-          <SectionTitle
-            eyebrow={homeContent.consultationSection.eyebrow}
-            title={homeContent.consultationSection.title}
-            subtitle={homeContent.consultationSection.subtitle}
-          />
-          <div className="card-grid three-up home-benefit-grid">
-            {homeContent.problemSolutions.map((item) => (
-              <div key={item.title} className="stat-card">
-                <strong>{item.title}</strong>
-                <span>{item.text}</span>
-              </div>
-            ))}
-          </div>
-        </Container>
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mb-10">
+          <p className="font-bold uppercase tracking-widest text-orange-500">Danh mục bán hàng</p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Đầy đủ sản phẩm như thị trường, mở rộng thêm combo setup</h2>
+          <p className="mt-4 max-w-3xl leading-7 text-slate-600">Từ ô dù ngoài trời đến nhà bạt, bàn ghế, xích đu và combo setup quán cafe, website được cấu trúc để tối ưu SEO từng danh mục và từng sản phẩm.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((category) => (
+            <Link href={`/danh-muc/${category.slug}`} key={category.slug} className="rounded-3xl bg-white p-6 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100 transition hover:-translate-y-1">
+              <h3 className="text-xl font-black text-blue-800">{category.name}</h3>
+              <p className="mt-2 line-clamp-2 text-sm leading-7 text-slate-600">{category.description}</p>
+            </Link>
+          ))}
+        </div>
       </section>
 
-      <section className="section home-section-compact">
-        <Container>
-          <SectionTitle
-            eyebrow={homeContent.productsSection.eyebrow}
-            title={homeContent.productsSection.title}
-            subtitle={homeContent.productsSection.subtitle}
-          />
-          <div className="card-grid four-up">
-            {featuredProducts.map((item) => (
-              <CategoryCard key={item.slug} item={item} />
-            ))}
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div><p className="font-bold uppercase tracking-widest text-orange-500">Sản phẩm nổi bật</p><h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Ô dù ngoài trời bán chạy</h2></div>
+            <Link href="/san-pham" className="font-bold text-blue-700">Xem tất cả sản phẩm →</Link>
           </div>
-        </Container>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {products.slice(0, 6).map((product) => <ProductCard key={product.slug} product={product} />)}
+          </div>
+        </div>
       </section>
 
-      <section className="section section-soft home-section-compact">
-        <Container>
-          <div className="split-heading">
-            <div>
-              <p className="eyebrow">{homeContent.projectsSection.eyebrow}</p>
-              <h2 className="section-title-inline">{homeContent.projectsSection.title}</h2>
-              <p className="section-subtitle">{homeContent.projectsSection.subtitle}</p>
-            </div>
-            <Button href="/du-an">{homeContent.projectsSection.cta}</Button>
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <article className="rounded-[2rem] bg-white p-7 shadow-lg shadow-slate-200/70 ring-1 ring-slate-100">
+          <p className="font-bold uppercase tracking-widest text-orange-500">Nội dung SEO chuyên sâu</p>
+          <h2 className="mt-2 text-3xl font-black">Mua ô dù ngoài trời chất lượng cao tại Ô Dù Đại Phát</h2>
+          <div className="mt-5 space-y-4 leading-8 text-slate-700">
+            <p>Ô Dù Đại Phát cung cấp các dòng ô dù ngoài trời phục vụ nhu cầu che nắng cho quán cafe, nhà hàng, sân vườn, khu nghỉ dưỡng, resort, hồ bơi, sự kiện và điểm bán hàng. Sản phẩm được tư vấn theo không gian sử dụng, kích thước khu vực cần che, phong cách thiết kế và ngân sách.</p>
+            <p>Các dòng sản phẩm gồm dù lệch tâm, dù đúng tâm, dù cafe, dù sân vườn, dù quảng cáo in logo, nhà bạt di động, bàn ghế ngoài trời, ghế băng sân vườn, xích đu và combo setup quán cafe. Mỗi mẫu có thể tùy chọn kích thước, màu sắc, chất liệu vải, kiểu khung và phụ kiện.</p>
+            <p>Khách hàng có thể gọi hoặc Zalo {site.phone} để gửi hình ảnh mặt bằng, số lượng cần mua và vị trí giao hàng. Đội ngũ Ô Dù Đại Phát sẽ hỗ trợ tư vấn mẫu phù hợp, báo giá nhanh và giao hàng toàn quốc.</p>
           </div>
-          <div className="card-grid three-up">
-            {projects.slice(0, 3).map((item) => (
-              <ProjectCard key={item.slug} item={item} />
-            ))}
-          </div>
-        </Container>
+        </article>
       </section>
-
-      <YoutubeGallery
-        videos={featuredVideos}
-        title={homeContent.videoSection.title}
-        subtitle={homeContent.videoSection.subtitle}
-        source="homepage_video_funnel"
-      />
-
-      <section className="section home-section-compact">
-        <Container>
-          <SectionTitle
-            eyebrow={homeContent.quoteProcessSection.eyebrow}
-            title={homeContent.quoteProcessSection.title}
-            subtitle={homeContent.quoteProcessSection.subtitle}
-          />
-          <div className="card-grid four-up home-benefit-grid">
-            {homeContent.quoteSteps.map((step, index) => (
-              <div key={step.title} className="stat-card">
-                <strong>
-                  {index + 1}. {step.title}
-                </strong>
-                <span>{step.text}</span>
-              </div>
-            ))}
-          </div>
-          <div className="hero-actions center-actions">
-            <ZaloLink placement="homepage_quote_process" className="button button-zalo">
-              {homeContent.hero.zaloCta}
-            </ZaloLink>
-            <PhoneLink placement="homepage_quote_process">Gọi {siteData.phoneDisplay}</PhoneLink>
-          </div>
-        </Container>
-      </section>
-
-      <section className="section section-soft home-section-compact" id="faq">
-        <Container>
-          <div className="lead-grid">
-            <div className="lead-panel">
-              <p className="eyebrow eyebrow-on-dark">{homeContent.leadPanel.eyebrow}</p>
-              <h2 className="section-title-inline">{homeContent.leadPanel.title}</h2>
-              <p>{homeContent.leadPanel.paragraph}</p>
-              <ul className="check-list">
-                {homeContent.leadPanel.checklist.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              <div className="hero-actions">
-                <QuoteCta source="homepage_lead_panel">{homeContent.leadPanel.cta}</QuoteCta>
-                <ZaloLink placement="homepage_lead_panel">
-                  {homeContent.leadPanel.zaloCta}
-                </ZaloLink>
-              </div>
-            </div>
-            <LeadForm />
-          </div>
-
-          <section className="final-quote-cta" aria-label="Nhận báo giá ô dù">
-            <h2>{homeContent.finalCta.title}</h2>
-            <p>{homeContent.finalCta.description}</p>
-            <div className="hero-actions center-actions">
-              <QuoteCta source="homepage_final_cta">{homeContent.finalCta.cta}</QuoteCta>
-              <PhoneLink placement="homepage_final_cta">Gọi {siteData.phoneDisplay}</PhoneLink>
-              <ZaloLink placement="homepage_final_cta" className="button button-zalo">
-                Nhắn Zalo
-              </ZaloLink>
-            </div>
-          </section>
-
-          <div className="faq-list compact-faq-list">
-            {homeContent.faqs.map((faq) => (
-              <details key={faq.question} className="faq-item">
-                <summary>{faq.question}</summary>
-                <p>{faq.answer}</p>
-              </details>
-            ))}
-          </div>
-        </Container>
-      </section>
-    </SiteShell>
+    </main>
   );
 }

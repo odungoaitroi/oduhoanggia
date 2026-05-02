@@ -1,31 +1,16 @@
-import type { MetadataRoute } from "next";
-import { areas, articles, policyPages, productCategories, products, projects, siteData } from "../lib/site-data";
+import type { MetadataRoute } from 'next';
+import { categories, products } from '@/lib/products';
+import { locations } from '@/lib/locations';
+import { site } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    "",
-    "/gioi-thieu",
-    "/lien-he",
-    "/bao-gia",
-    "/san-pham",
-    "/du-an",
-    "/khu-vuc",
-    "/kien-thuc",
-    "/chinh-sach",
-    "/huong-dan",
-    "/video-huong-dan",
+  const now = new Date();
+  return [
+    { url: site.url, lastModified: now, changeFrequency: 'weekly', priority: 1 },
+    { url: `${site.url}/san-pham`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${site.url}/lien-he`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
+    ...categories.map((category) => ({ url: `${site.url}/danh-muc/${category.slug}`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.86 })),
+    ...locations.map((location) => ({ url: `${site.url}/khu-vuc/${location.slug}`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.78 })),
+    ...products.map((product) => ({ url: `${site.url}/san-pham/${product.slug}`, lastModified: now, changeFrequency: 'weekly' as const, priority: 0.85 }))
   ];
-
-  const categoryRoutes = productCategories.map((item) => `/san-pham/${item.slug}`);
-  const productRoutes = products.map((item) => `/san-pham/chi-tiet/${item.slug}`);
-  const projectRoutes = projects.map((item) => `/du-an/${item.slug}`);
-  const areaRoutes = areas.map((item) => `/khu-vuc/${item.slug}`);
-  const articleRoutes = articles.map((item) => `/kien-thuc/${item.slug}`);
-  const policyRoutes = policyPages.map((item) => `/chinh-sach/${item.slug}`);
-
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes, ...projectRoutes, ...areaRoutes, ...articleRoutes, ...policyRoutes].map((path) => ({
-    url: `${siteData.domain}${path}`,
-    changeFrequency: path === "" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : 0.8
-  }));
 }

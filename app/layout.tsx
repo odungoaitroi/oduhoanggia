@@ -1,74 +1,40 @@
-import type { Metadata, Viewport } from "next";
-import type { ReactNode } from "react";
-import { Be_Vietnam_Pro } from "next/font/google";
-import "./globals.css";
-import { siteData } from "../lib/site-data";
-import { Analytics } from "../components/analytics";
-
-const beVietnamPro = Be_Vietnam_Pro({
-  subsets: ["vietnamese", "latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-  variable: "--font-sans",
-  preload: true
-});
+import type { Metadata } from 'next';
+import './globals.css';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { FloatingCTA } from '@/components/FloatingCTA';
+import { site } from '@/lib/site';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteData.domain),
+  metadataBase: new URL(site.url),
   title: {
-    default: siteData.seoTitle,
-    template: `%s | ${siteData.brandName}`
+    default: 'Ô Dù Đại Phát - Ô Dù Ngoài Trời, Dù Che Nắng, Dù Sân Vườn',
+    template: '%s | Ô Dù Đại Phát'
   },
-  description: siteData.seoDescription,
-  applicationName: siteData.brandName,
-  alternates: {
-    canonical: "/"
-  },
+  description: site.description,
+  keywords: ['ô dù ngoài trời', 'dù che nắng', 'dù sân vườn', 'dù cafe', 'dù lệch tâm', 'dù đúng tâm', 'nhà bạt', 'bàn ghế ngoài trời', 'xích đu sân vườn'],
+  alternates: { canonical: '/' },
   openGraph: {
-    title: siteData.seoTitle,
-    description: siteData.seoDescription,
-    url: siteData.domain,
-    siteName: siteData.brandName,
-    locale: "vi_VN",
-    type: "website",
-    images: [
-      {
-        url: siteData.socialImage,
-        width: 1200,
-        height: 630,
-        alt: siteData.brandName
-      }
-    ]
+    type: 'website',
+    locale: 'vi_VN',
+    url: site.url,
+    siteName: site.name,
+    title: 'Ô Dù Đại Phát - Ô Dù Ngoài Trời Chất Lượng Cao',
+    description: site.description,
+    images: [{ url: '/images/og-image.webp', width: 1200, height: 630, alt: 'Ô Dù Đại Phát - ô dù ngoài trời cao cấp' }]
   },
-  icons: {
-    icon: "/favicon.svg",
-    apple: "/favicon.svg"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteData.seoTitle,
-    description: siteData.seoDescription,
-    images: [{ url: siteData.socialImage, width: 1200, height: 630, alt: siteData.brandName }]
-  },
-  robots: {
-    index: true,
-    follow: true
-  },
-  other: {
-    "format-detection": "telephone=no"
-  }
+  twitter: { card: 'summary_large_image', title: site.name, description: site.description },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } }
 };
 
-export const viewport: Viewport = {
-  themeColor: "#f97316"
-};
-
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={beVietnamPro.variable}>
-      <body className={beVietnamPro.className}>
+    <html lang="vi">
+      <body>
+        <Header />
         {children}
-        <Analytics />
+        <Footer />
+        <FloatingCTA />
       </body>
     </html>
   );

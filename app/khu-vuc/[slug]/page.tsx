@@ -1,83 +1,65 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { ProductCard, ProjectCard } from "../../../components/cards";
-import { BaseSchemas, JsonLd } from "../../../components/schema";
-import { SiteShell } from "../../../components/site-shell";
-import { Breadcrumbs, Button, Container, InfoList, SectionTitle } from "../../../components/ui";
-import { areas, getArea, getRelatedProducts, getRelatedProjects, siteData } from "../../../lib/site-data";
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { locations } from '@/lib/locations';
+import { categories } from '@/lib/products';
+import { site } from '@/lib/site';
+import { JsonLd } from '@/components/JsonLd';
 
-export function generateStaticParams() {
-  return areas.map((item) => ({ slug: item.slug }));
+export async function generateStaticParams() {
+  return locations.map((location) => ({ slug: location.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const area = getArea(params.slug);
-  if (!area) return {};
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const location = locations.find((l) => l.slug === slug);
+  if (!location) return {};
+  const title = `Ô dù ngoài trời tại ${location.name} | Ô Dù Đại Phát`;
+  const description = `Báo giá ô dù ngoài trời, dù cafe, dù sân vườn, dù lệch tâm tại ${location.name}. Gọi/Zalo ${site.phone}.`;
   return {
-    title: area.seoTitle,
-    description: area.seoDescription,
-    alternates: { canonical: `/khu-vuc/${area.slug}` }
+    title,
+    description,
+    alternates: { canonical: `/khu-vuc/${location.slug}` },
+    openGraph: { title, description, url: `${site.url}/khu-vuc/${location.slug}`, images: [{ url: '/images/og-image.webp', width: 1200, height: 630, alt: title }] }
   };
 }
 
-export default function AreaDetailPage({ params }: { params: { slug: string } }) {
-  const area = getArea(params.slug);
-  if (!area) notFound();
-  const products = getRelatedProducts(area.featuredProductSlugs);
-  const projects = getRelatedProjects(area.featuredProjectSlugs);
-
-  const localSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: `Ô dù ngoài trời ${area.name}`,
-    description: area.seoDescription,
-    url: `${siteData.domain}/khu-vuc/${area.slug}`
+export default async function LocationPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const location = locations.find((l) => l.slug === slug);
+  if (!location) notFound();
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `Ô dù ngoài trời tại ${location.name}`,
+    provider: { '@type': 'LocalBusiness', name: 'Ô Dù Đại Phát', telephone: site.phone, url: site.url },
+    areaServed: location.name,
+    serviceType: 'Cung cấp ô dù ngoài trời, dù cafe, dù sân vườn, nhà bạt, bàn ghế ngoài trời'
   };
 
   return (
-    <SiteShell>
-      <BaseSchemas />
-      <JsonLd data={localSchema} />
-      <section className="page-hero">
-        <Container>
-          <Breadcrumbs items={[{ label: "Trang chủ", href: "/" }, { label: "Khu vực", href: "/khu-vuc" }, { label: area.name }]} />
-          <SectionTitle eyebrow="Khu vực giao hàng" title={`Ô dù ngoài trời ${area.name}`} subtitle={area.intro} align="left" as="h1" />
-          <div className="page-actions">
-            <Button href="/bao-gia" variant="primary">Nhận báo giá tại {area.name}</Button>
-          </div>
-        </Container>
+    <main>
+      <JsonLd data={schema} />
+      <section className="bg-blue-950 px-4 py-16 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="font-bold uppercase tracking-widest text-orange-300">SEO khu vực</p>
+          <h1 className="mt-2 text-4xl font-black sm:text-5xl">Ô dù ngoài trời tại {location.name}</h1>
+          <p className="mt-5 max-w-3xl leading-8 text-blue-100">Báo giá ô dù ngoài trời, dù cafe, dù sân vườn, dù lệch tâm, nhà bạt và bàn ghế ngoài trời tại {location.name}.</p>
+        </div>
       </section>
-      <section className="section">
-        <Container>
-          <div className="content-grid">
-            <article className="content-card">
-              <h2>Nhu cầu phổ biến</h2>
-              <InfoList items={area.demand} />
-            </article>
-            <article className="content-card">
-              <h2>Vận chuyển và hỗ trợ</h2>
-              <p>{area.shipping}</p>
-              <p>{area.support}</p>
-            </article>
-          </div>
-        </Container>
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <article className="rounded-[2rem] bg-white p-8 leading-8 text-slate-700 shadow-lg shadow-slate-200 ring-1 ring-slate-100">
+          <h2 className="text-3xl font-black text-slate-900">Báo giá ô dù ngoài trời tại {location.name}</h2>
+          <p className="mt-4">Ô Dù Đại Phát cung cấp các mẫu ô dù ngoài trời cho quán cafe, nhà hàng, sân vườn, hồ bơi, resort, sự kiện và điểm bán hàng tại {location.name}. Khách hàng có thể gửi hình ảnh mặt bằng qua Zalo {site.phone} để được tư vấn mẫu phù hợp.</p>
+          <p className="mt-4">Các nhóm sản phẩm phổ biến gồm {categories.map((c) => c.name.toLowerCase()).join(', ')}. Mỗi nhóm sản phẩm đều có thể tối ưu nội dung SEO riêng, giúp website mở rộng hệ thống landing page theo khu vực.</p>
+          <h3 className="mt-8 text-2xl font-black text-slate-900">Quy trình đặt hàng tại {location.name}</h3>
+          <ol className="mt-4 list-decimal space-y-2 pl-6">
+            <li>Gửi nhu cầu, kích thước khu vực cần che và số lượng.</li>
+            <li>Ô Dù Đại Phát tư vấn mẫu, màu sắc, chất liệu và phương án vận chuyển.</li>
+            <li>Báo giá nhanh qua điện thoại/Zalo.</li>
+            <li>Chốt đơn, giao hàng và hỗ trợ sau bán.</li>
+          </ol>
+        </article>
       </section>
-      <section className="section section-soft">
-        <Container>
-          <SectionTitle eyebrow="Sản phẩm phù hợp" title={`Mẫu ô dù phù hợp tại ${area.name}`} />
-          <div className="card-grid four-up">
-            {products.map((item) => <ProductCard key={item.slug} item={item} />)}
-          </div>
-        </Container>
-      </section>
-      <section className="section">
-        <Container>
-          <SectionTitle eyebrow="Công trình liên quan" title={`Công trình tham khảo tại ${area.name}`} />
-          <div className="card-grid three-up">
-            {projects.map((item) => <ProjectCard key={item.slug} item={item} />)}
-          </div>
-        </Container>
-      </section>
-    </SiteShell>
+    </main>
   );
 }
